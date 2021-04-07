@@ -1,0 +1,19 @@
+{
+    "name": "xguard/phone-scheduler",
+    "description": "A phone scheduler tool to organise employee shifts & priority",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Siamak Samie",
+            "email": "siamak.samie@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Xguard\\PhoneScheduler\\": "src/"
+        }
+    }
+
+}
