@@ -3,6 +3,7 @@
 namespace Xguard\PhoneScheduler\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use DateTime;
 use Xguard\PhoneScheduler\Models\Employee;
 use Xguard\PhoneScheduler\Models\PhoneLine;
 
@@ -42,8 +43,8 @@ class PhoneScheduleController extends Controller
                 $employeeCards = [];
                 $employeeIndex = 1;
                 foreach ($column['employeeCards'] as $employeeCard) {
-                    if((int)$employeeCard['employee']['is_active']){
-                        $employeeCardData = ['index' => $employeeIndex, 'phone'=> $employeeCard['employee']['phone'], 'name' => $employeeCard['employee']['name'],];
+                    if ((int)$employeeCard['employee']['is_active']) {
+                        $employeeCardData = ['index' => $employeeIndex, 'phone' => $employeeCard['employee']['phone'], 'name' => $employeeCard['employee']['name'],];
                         array_push($employeeCards, $employeeCardData);
                         $employeeIndex++;
                     }
@@ -55,5 +56,43 @@ class PhoneScheduleController extends Controller
             array_push($rows, $rowData);
         }
         return json_encode($rows);
+    }
+
+    public function getAvailableAgent($id, $level)
+    {
+        $level--; // we start at index 0
+        $phoneLineData = PhoneLine::with('members.employee', 'rows.columns.employeeCards.employee')->find($id);
+
+        $dayOfWeek = date("l");
+        $currentTime = date('h:i a');
+
+        foreach ($phoneLineData['rows'] as $row) {
+
+            if ($row['name'] === $dayOfWeek) {
+
+                foreach ($row['columns'] as $column) {
+                    $now = DateTime::createFromFormat('h:i a', $currentTime);
+                    $start = DateTime::createFromFormat('h:i a', $column['shift_start']);
+                    $end = DateTime::createFromFormat('h:i a', $column['shift_end']);
+
+                    if ($start > $end) $end->modify('+1 day');
+                    if ($start <= $now && $now <= $end || $start <= $now->modify('+1 day') && $now <= $end) {
+                        try {
+
+                            $filtered = $column->employeeCards->filter(function ($item) {
+                                return data_get($item->employee, 'is_active') === 1;
+                            });
+
+                            $phone = $filtered->values()->get($level)->employee->phone;
+                            $name = $filtered->values()->get($level)->employee->name;
+                        } catch (\Exception $e) {
+                            return [];
+                        }
+                        return ['name' => $name, 'test' => $phone,];
+                    }
+                }
+            }
+        }
+        return [];
     }
 }

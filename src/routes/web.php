@@ -47,6 +47,8 @@ Route::group(['middleware' => ['web', 'phone_scheduler_role_check']], function (
             //API
 
             Route::get('/api/formatted-phone-line-data/{id}', 'PhoneScheduleController@getFormattedData');
+            Route::get('/api/get-available-agent/{id}/{level}', 'PhoneScheduleController@getAvailableAgent');
+
         });
     });
 });

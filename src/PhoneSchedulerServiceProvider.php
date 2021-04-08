@@ -3,6 +3,7 @@
 namespace Xguard\PhoneScheduler;
 
 use Illuminate\Support\ServiceProvider;
+use Xguard\PhoneScheduler\Commands\CreateAdmin;
 use Xguard\PhoneScheduler\Http\Middleware\CheckHasAccess;
 
 class PhoneSchedulerServiceProvider extends ServiceProvider
@@ -28,6 +29,7 @@ class PhoneSchedulerServiceProvider extends ServiceProvider
         app('router')->aliasMiddleware('phone_scheduler_role_check', CheckHasAccess::class);
         $this->loadMigrationsFrom(__DIR__ . '/Http/Middleware');
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+        $this->commands([CreateAdmin::class]);
 
         include __DIR__ . '/routes/web.php';
 

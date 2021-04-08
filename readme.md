@@ -11,6 +11,12 @@ composer require xguard/phone-scheduler
 php artisan migrate
 php artisan vendor:publish --provider="Xguard\PhoneScheduler\PhoneSchedulerServiceProvider" --force
 ```
+Use the following command to create an admin. It will prompt you for basic info including an ERP email.
+
+```bash
+php artisan phone-scheduler:create-admin
+```
+You can now go to the **/phone-schduler** path to use the pacakge. You must first login to the ERP. 
 
 ## Develpment 
 
@@ -23,7 +29,7 @@ Create a "package" folder if you don't have one.
 **2:** Then, add line of code in the psr-4 of your root composer.json
 ```json
 "psr-4": {
-    ...
+    //...
     "Xguard\\PhoneScheduler\\": "package/phone-scheduler/src/"
 },
 ```
