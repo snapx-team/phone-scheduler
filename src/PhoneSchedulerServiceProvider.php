@@ -26,16 +26,13 @@ class PhoneSchedulerServiceProvider extends ServiceProvider
     public function boot(\Illuminate\Routing\Router $router)
     {
         app('router')->aliasMiddleware('phone_scheduler_role_check', CheckHasAccess::class);
-        $this->loadMigrationsFrom(__DIR__.'/Http/Middleware');
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/Http/Middleware');
+        $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         include __DIR__ . '/routes/web.php';
 
-        if ($this->app->runningInConsole()) {
-
-            $this->publishes([
-                __DIR__ . '/../public' => public_path('vendor/phone-scheduler'),
-            ], 'phone-scheduler-assets');
-        }
+        $this->publishes([
+            __DIR__ . '/../public' => public_path('vendor/phone-scheduler'),
+        ], 'phone-scheduler-assets');
     }
 }
