@@ -27,6 +27,7 @@ class PhoneSchedulerServiceProvider extends ServiceProvider
     {
         app('router')->aliasMiddleware('phone_scheduler_role_check', CheckHasAccess::class);
         $this->loadMigrationsFrom(__DIR__.'/Http/Middleware');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         include __DIR__ . '/routes/web.php';
 
