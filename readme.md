@@ -4,10 +4,12 @@ This is a phone scheduling application that generates data to be fetched by twil
 
 ## Installation
 
-Use the following command to install
+Use the following commands to install
 
 ```bash
 composer require xguard/phone-scheduler
+php artisan migrate
+php artisan vendor:publish --provider="Xguard\PhoneScheduler\PhoneSchedulerServiceProvider" --force
 ```
 
 ## Develpment 

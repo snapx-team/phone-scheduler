@@ -20,11 +20,11 @@ class CheckHasAccess
         if (Auth::check()) {
             $employee = Employee::where('email', '=', Auth::user()->email)->first();
             if ($employee === null || $employee->role !== "admin") {
-                return redirect()->route('home');
+                abort(403, "You need to be an admin to view this page");
             }
         }
         else{
-            return redirect()->route('home');
+            abort(403, "Please first login to ERP");
         }
         return $next($request);
     }
