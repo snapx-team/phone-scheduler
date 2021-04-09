@@ -18,6 +18,18 @@ php artisan phone-scheduler:create-admin
 ```
 You can now go to the **/phone-schduler** path to use the pacakge. You must first login to the ERP. 
 
+To get a formatted json of the phone scheduler you can use the following API endpoint path:
+
+```bash
+/api/formatted-phone-line-data/{id}
+```
+To get current available dispatcher via a "level" you can use the following API endpoint path:
+
+```bash
+/api/get-available-agent/{id}/{level}
+```
+
+
 ## Develpment 
 
 **Follow these steps to make modifications to the package**

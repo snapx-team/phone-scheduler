@@ -120,6 +120,10 @@
             });
         },
 
+        beforeDestroy(){
+            this.eventHub.$off('create-columns');
+        },
+
         computed: {
             rangesComputed() {
                 for (const [index, column] of this.columnData.ranges.entries()) {

@@ -152,6 +152,10 @@
                 this.openModal(cardData);
             });
         },
+
+        beforeDestroy(){
+            this.eventHub.$off('create-employee-cards');
+        },
         computed: {
             filtered() {
                 const regex = new RegExp(this.filter, "i");

@@ -139,6 +139,11 @@
                 this.modalOpen = true;
             });
         },
+
+        beforeDestroy(){
+            this.eventHub.$off('add-member');
+        },
+
         mounted(){
             this.asyncGetEmployees().then((data) => {
                 this.allUsers = data.data;

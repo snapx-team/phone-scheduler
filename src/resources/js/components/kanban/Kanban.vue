@@ -128,6 +128,15 @@
                 this.saveColumns(columnData);
             });
         },
+
+        beforeDestroy(){
+            this.eventHub.$off('save-employee-cards');
+            this.eventHub.$off('delete-employee-cards');
+            this.eventHub.$off('save-members');
+            this.eventHub.$off('remove-member');
+            this.eventHub.$off('save-columns');
+        },
+
         methods: {
             createEmployeeCard(rowIndex, columnIndex) {
                 var rowName = this.kanban.rows[rowIndex].name;

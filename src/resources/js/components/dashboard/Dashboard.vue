@@ -70,6 +70,13 @@
             });
         },
 
+        beforeDestroy(){
+            this.eventHub.$off('save-employee');
+            this.eventHub.$off('save-phone-line');
+            this.eventHub.$off('delete-phone-line');
+            this.eventHub.$off('delete-employee');
+        },
+
         methods: {
             saveEmployee(employeeData) {
                 this.loadingEmployee = true;

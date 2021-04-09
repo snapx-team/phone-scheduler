@@ -191,6 +191,10 @@
             });
         },
 
+        beforeDestroy(){
+            this.eventHub.$off('create-phone-line');
+        },
+
         mounted() {
             this.getTags();
         },

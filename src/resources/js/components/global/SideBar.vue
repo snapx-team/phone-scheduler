@@ -14,7 +14,7 @@
             <div class="my-2 -mx-3 pb-2">
                 <router-link :to="{ path: '/phone-scheduler' }"
                              class="flex justify-between items-center px-3 py-2 hover:bg-gray-200 rounded-lg">
-                    <span class="text-sm font-medium text-gray-900">Dashbaord</span>
+                    <span class="text-sm font-medium text-gray-900">Dashboard</span>
                 </router-link>
             </div>
 

@@ -207,6 +207,10 @@
             });
         },
 
+        beforeDestroy(){
+            this.eventHub.$off('create-employee');
+        },
+
         methods: {
             saveEmployee(event) {
                 event.target.disabled = true;

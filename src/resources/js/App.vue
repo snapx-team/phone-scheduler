@@ -48,5 +48,9 @@
                 this.kanbanIsLoading = state;
             });
         },
+
+        beforeDestroy(){
+            this.eventHub.$off('set-loading-state');
+        },
     };
 </script>

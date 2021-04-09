@@ -6527,6 +6527,9 @@ __webpack_require__.r(__webpack_exports__);
     this.eventHub.$on("set-loading-state", function (state) {
       _this.kanbanIsLoading = state;
     });
+  },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('set-loading-state');
   }
 });
 
@@ -6619,6 +6622,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.eventHub.$on("delete-employee", function (employeeId) {
       _this.deleteEmployee(employeeId);
     });
+  },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('save-employee');
+    this.eventHub.$off('save-phone-line');
+    this.eventHub.$off('delete-phone-line');
+    this.eventHub.$off('delete-employee');
   },
   methods: {
     saveEmployee: function saveEmployee(employeeData) {
@@ -6998,6 +7007,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.modalOpen = true;
     });
   },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('create-employee');
+  },
   methods: {
     saveEmployee: function saveEmployee(event) {
       event.target.disabled = true;
@@ -7217,6 +7229,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       _this.modalOpen = true;
     });
+  },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('create-phone-line');
   },
   mounted: function mounted() {
     this.getTags();
@@ -7511,8 +7526,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   methods: {
-    editPhoneLine: function editPhoneLine(index) {
-      this.eventHub.$emit("create-phone-line", this.phoneLines[index]);
+    editPhoneLine: function editPhoneLine(phoneLine) {
+      this.eventHub.$emit("create-phone-line", phoneLine);
     }
   }
 });
@@ -7887,6 +7902,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.saveColumns(columnData);
     });
   },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('save-employee-cards');
+    this.eventHub.$off('delete-employee-cards');
+    this.eventHub.$off('save-members');
+    this.eventHub.$off('remove-member');
+    this.eventHub.$off('save-columns');
+  },
   methods: {
     createEmployeeCard: function createEmployeeCard(rowIndex, columnIndex) {
       var rowName = this.kanban.rows[rowIndex].name;
@@ -8217,6 +8239,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       _this.modalOpen = true;
     });
   },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('create-columns');
+  },
   computed: {
     rangesComputed: function rangesComputed() {
       var _iterator = _createForOfIteratorHelper(this.columnData.ranges.entries()),
@@ -8490,6 +8515,9 @@ __webpack_require__.r(__webpack_exports__);
       _this.openModal(cardData);
     });
   },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('create-employee-cards');
+  },
   computed: {
     filtered: function filtered() {
       var _this2 = this;
@@ -8683,6 +8711,9 @@ __webpack_require__.r(__webpack_exports__);
     this.eventHub.$on("add-member", function () {
       _this.modalOpen = true;
     });
+  },
+  beforeDestroy: function beforeDestroy() {
+    this.eventHub.$off('add-member');
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -16765,9 +16796,7 @@ var render = function() {
                                         "cursor-pointer px-2 text-gray-400 hover:text-gray-600 transition duration-300 ease-in-out focus:outline-none",
                                       on: {
                                         click: function($event) {
-                                          return _vm.editPhoneLine(
-                                            phoneLineIndex
-                                          )
+                                          return _vm.editPhoneLine(phoneLine)
                                         }
                                       }
                                     },
@@ -17142,7 +17171,7 @@ var render = function() {
                 _c(
                   "span",
                   { staticClass: "text-sm font-medium text-gray-900" },
-                  [_vm._v("Dashbaord")]
+                  [_vm._v("Dashboard")]
                 )
               ]
             )
