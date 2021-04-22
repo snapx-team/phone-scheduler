@@ -18859,16 +18859,6 @@ var render = function() {
           )
         ],
         2
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            "my-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors hover:bg-red-700 duration-150 focus:outline-none float-right",
-          attrs: { type: "button" }
-        },
-        [_vm._v("\n            Publish\n        ")]
       )
     ])
   ])
