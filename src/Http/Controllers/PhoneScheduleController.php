@@ -63,6 +63,8 @@ class PhoneScheduleController extends Controller
         $level--; // we start at index 0
         $phoneLineData = PhoneLine::with('members.employee', 'rows.columns.employeeCards.employee')->find($id);
 
+        date_default_timezone_set('America/Montreal');
+
         $dayOfWeek = date("l");
         $currentTime = date('h:i a');
 
@@ -88,7 +90,7 @@ class PhoneScheduleController extends Controller
                         } catch (\Exception $e) {
                             return [];
                         }
-                        return ['name' => $name, 'test' => $phone,];
+                        return ['name' => $name, 'phone' => $phone,];
                     }
                 }
             }

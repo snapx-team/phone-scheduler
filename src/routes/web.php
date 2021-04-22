@@ -44,11 +44,16 @@ Route::group(['middleware' => ['web', 'phone_scheduler_role_check']], function (
             Route::post('/delete-member/{id}', 'MemberController@deleteMember');
             Route::get('/get-members/{id}', 'MemberController@getMembers');
 
-            //API
-
-            Route::get('/api/formatted-phone-line-data/{id}', 'PhoneScheduleController@getFormattedData');
-            Route::get('/api/get-available-agent/{id}/{level}', 'PhoneScheduleController@getAvailableAgent');
-
         });
+    });
+});
+
+// API
+
+Route::group(['namespace' => 'Xguard\PhoneScheduler\Http\Controllers',], function () {
+    Route::group(['prefix' => 'phone-scheduler',], function () {
+
+        Route::get('/api/formatted-phone-line-data/{id}', 'PhoneScheduleController@getFormattedData');
+        Route::get('/api/get-available-agent/{id}/{level}', 'PhoneScheduleController@getAvailableAgent');
     });
 });

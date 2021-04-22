@@ -24,10 +24,10 @@
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
-            <button class="my-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors hover:bg-red-700 duration-150 focus:outline-none float-right"
-                    type="button">
-                Publish
-            </button>
+<!--            <button class="my-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors hover:bg-red-700 duration-150 focus:outline-none float-right"-->
+<!--                    type="button">-->
+<!--                Publish-->
+<!--            </button>-->
         </div>
     </div>
 </template>
