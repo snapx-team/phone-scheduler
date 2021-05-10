@@ -27,16 +27,14 @@ class Log extends Model
     const TYPE_KANBAN_MEMBER_CREATED = 10;
     const TYPE_KANBAN_MEMBER_DELETED = 11;
 
-    public static function createLog(?int $userId, int $logId, string $description = '')
-    {
-        return Log::create([
-            'user_id' => $userId,
-            'log_type' => $logId,
-            'description' => $description
-        ]);
-    }
-
-
+//    public static function createLog(?int $userId, int $logId, string $description = '')
+//    {
+//        return Log::create([
+//            'user_id' => $userId,
+//            'log_type' => $logId,
+//            'description' => $description
+//        ]);
+//    }
 
     public function employee(): BelongsTo
     {

@@ -87,14 +87,15 @@ class PhoneScheduleController extends Controller
 
                             $phone = $filtered->values()->get($level)->employee->phone;
                             $name = $filtered->values()->get($level)->employee->name;
+                            $employeeID = $filtered->values()->get($level)->employee->name;
                         } catch (\Exception $e) {
-                            return [];
+                            return ['employee_id'=> '', 'name' => '', 'phone' => '',];
                         }
-                        return ['name' => $name, 'phone' => $phone,];
+                        return ['employee_id'=> $employeeID, 'name' => $name, 'phone' => $phone,];
                     }
                 }
             }
         }
-        return [];
+        return ['employee_id'=> '', 'name' => '', 'phone' => '',];
     }
 }

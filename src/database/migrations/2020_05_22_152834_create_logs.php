@@ -13,7 +13,7 @@ class CreateLogs extends Migration
      */
     public function up()
     {
-        Schema::create('logs', function (Blueprint $table) {
+        Schema::create('ps_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('log_type');
