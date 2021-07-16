@@ -1,6 +1,6 @@
 {
     "name": "xguard/phone-scheduler",
-    "description": "A phone scheduler tool to organise employee shifts & priority",
+    "description": "A phone scheduler tool to organise employee shifts & priority. For use with twilio",
     "license": "MIT",
     "authors": [
         {
