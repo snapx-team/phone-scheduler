@@ -8269,7 +8269,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   },
   methods: {
     updateNumberOfShifts: function updateNumberOfShifts(value) {
-      if (value > 0 && value < 11) this.columnData.numberOfShifts = value;
+      if (value > 0 && value < 16) this.columnData.numberOfShifts = value;
       this.generateNewRanges();
     },
     handleRangesChange: function handleRangesChange(event) {
@@ -41109,8 +41109,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\laragon\www\breeze\package\phone-scheduler\src\resources\js\app.js */"./src/resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\laragon\www\breeze\package\phone-scheduler\src\resources\sass\app.scss */"./src/resources/sass/app.scss");
+__webpack_require__(/*! C:\laragon\www\xguard-schedule\package\phone-scheduler\src\resources\js\app.js */"./src/resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\xguard-schedule\package\phone-scheduler\src\resources\sass\app.scss */"./src/resources/sass/app.scss");
 
 
 /***/ })

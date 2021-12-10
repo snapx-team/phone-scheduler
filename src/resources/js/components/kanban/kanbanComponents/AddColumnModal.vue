@@ -139,7 +139,7 @@
 
         methods: {
             updateNumberOfShifts(value) {
-                if (value > 0 && value < 11) this.columnData.numberOfShifts = value;
+                if (value > 0 && value < 16) this.columnData.numberOfShifts = value;
                 this.generateNewRanges();
             },
 
