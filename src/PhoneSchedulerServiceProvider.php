@@ -17,6 +17,8 @@ class PhoneSchedulerServiceProvider extends ServiceProvider
     {
         $this->app->make('Xguard\PhoneScheduler\Http\Controllers\PhoneScheduleController');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'Xguard\PhoneScheduler');
+        $this->mergeConfigFrom(__DIR__.'/../config.php', 'phone_scheduler');
+
     }
 
     /**
