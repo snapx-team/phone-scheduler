@@ -22,6 +22,7 @@ Route::group(['middleware' => ['web', 'phone_scheduler_role_check']], function (
             Route::post('/delete-phone-line/{id}', 'PhoneLineController@deletePhoneLine');
             Route::get('/get-phone-lines', 'PhoneLineController@getPhoneLines');
             Route::get('/get-tags', 'PhoneLineController@getTags');
+            Route::post('/update-mode-data', 'PhoneLineController@updateModeData');
 
             // Columns
             Route::post('/create-columns', 'ColumnController@createOrUpdateColumns');
@@ -43,7 +44,6 @@ Route::group(['middleware' => ['web', 'phone_scheduler_role_check']], function (
             Route::post('/create-members/{id}', 'MemberController@createMembers');
             Route::post('/delete-member/{id}', 'MemberController@deleteMember');
             Route::get('/get-members/{id}', 'MemberController@getMembers');
-
         });
     });
 });
@@ -57,5 +57,6 @@ Route::group(['namespace' => 'Xguard\PhoneScheduler\Http\Controllers',], functio
         Route::get('/api/get-available-agent/{id}/{level}', 'PhoneScheduleController@getAvailableAgent');
         Route::get('/api/get-recent-caller-info', 'PhoneScheduleController@getRecentCallerInfo');
         Route::post('/api/log-call', 'PhoneScheduleController@logCall');
+        Route::get('/api/get-directory-data/{id}', 'PhoneScheduleController@getDirectoryData');
     });
 });
