@@ -66,6 +66,25 @@ class PhoneLineController extends Controller
         return response(['success' => 'true'], 200);
     }
 
+    public function updateModeData(Request $request)
+    {
+        $directoryModeData = $request->all();
+
+        try {
+            PhoneLine::where('id', $directoryModeData['kanbanId'])->update([
+                'mode' => $directoryModeData['mode'],
+                'message_fr' => $directoryModeData['messageFR'],
+                'message_en' => $directoryModeData['messageEN'],
+            ]);
+
+        } catch (\Exception $e) {
+            return response([
+                'success' => 'false',
+                'message' => $e->getMessage(),
+            ], 400);
+        }
+    }
+
     public function getTags()
     {
         return PhoneLine::orderBy('tag')->distinct('tag')->pluck('tag');
