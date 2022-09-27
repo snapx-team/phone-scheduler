@@ -34,6 +34,65 @@ class PhoneScheduleController extends Controller
         ];
     }
 
+    public function getDirectoryData($id)
+    {
+        $phoneLineData = PhoneLine::with('members.employee', 'rows.columns.employeeCards.employee')->find($id);
+        $directoryData = [
+            'hasAvailableAgent' => false,
+            'employees' => [],
+            'messages' =>
+                [
+                    'fr' => $phoneLineData['message_fr'],
+                    'en' => $phoneLineData['message_fr']
+                ]
+        ];
+        date_default_timezone_set('America/Montreal');
+
+        $dayOfWeek = date("l");
+        $currentTime = date('h:i a');
+
+        foreach ($phoneLineData['rows'] as $row) {
+            if ($row['name'] === $dayOfWeek) {
+                foreach ($row['columns'] as $column) {
+                    $now = DateTime::createFromFormat('h:i a', $currentTime);
+                    $start = DateTime::createFromFormat('h:i a', $column['shift_start']);
+                    $end = DateTime::createFromFormat('h:i a', $column['shift_end']);
+                    if ($start > $end) {
+                        $end->modify('+1 day');
+                    }
+                    if ($start <= $now && $now <= $end || $start <= $now->modify('+1 day') && $now <= $end || $start == $end) {
+                        try {
+                            $filtered = $column->employeeCards->filter(function ($item) {
+                                return data_get($item->employee, 'is_active') === 1;
+                            });
+                            if (count($filtered) > 0) {
+                                $employeeIndex = 1;
+                                $directoryData['hasAvailableAgent']= true;
+                                foreach ($filtered as $employeeCards) {
+                                    $employee = [
+                                        "phone" => $employeeCards->employee->phone,
+                                        "name" => $employeeCards->employee->name,
+                                        "employeeID" => $employeeCards->employee->id
+                                    ];
+
+                                    array_push($directoryData['employees'], $employee);
+                                    $directoryData['messages']['fr'] .= ' Pour parler à '.$employeeCards->employee->name.', appuyez sur le '.$employeeIndex.'.';
+                                    $directoryData['messages']['en'] .= ' To speak to '.$employeeCards->employee->name.', press '.$employeeIndex.'.';
+                                    $employeeIndex++;
+                                }
+                            }
+
+                        } catch (\Exception $e) {
+                            return $directoryData;
+                        }
+                        return $directoryData;
+                    }
+                }
+            }
+        }
+        return ['employee_id' => '', 'name' => '', 'phone' => '',];
+    }
+
     public function getFormattedData($id)
     {
         $phoneLineData = PhoneLine::with('members.employee', 'rows.columns.employeeCards.employee')->find($id);
@@ -46,13 +105,19 @@ class PhoneScheduleController extends Controller
                 $employeeCards = [];
                 $employeeIndex = 1;
                 foreach ($column['employeeCards'] as $employeeCard) {
-                    if ((int)$employeeCard['employee']['is_active']) {
-                        $employeeCardData = ['index' => $employeeIndex, 'phone' => $employeeCard['employee']['phone'], 'name' => $employeeCard['employee']['name'],];
+                    if ((int) $employeeCard['employee']['is_active']) {
+                        $employeeCardData = [
+                            'index' => $employeeIndex, 'phone' => $employeeCard['employee']['phone'],
+                            'name' => $employeeCard['employee']['name'],
+                        ];
                         array_push($employeeCards, $employeeCardData);
                         $employeeIndex++;
                     }
                 }
-                $columnData = ['timespan' => $column['name'], 'start' => $column['shift_start'], 'end' => $column['shift_end'], 'employee' => $employeeCards,];
+                $columnData = [
+                    'timespan' => $column['name'], 'start' => $column['shift_start'], 'end' => $column['shift_end'],
+                    'employee' => $employeeCards,
+                ];
                 array_push($columns, $columnData);
             }
             $rowData = ['day' => $row['name'], 'shifts' => $columns,];
@@ -72,18 +137,17 @@ class PhoneScheduleController extends Controller
         $currentTime = date('h:i a');
 
         foreach ($phoneLineData['rows'] as $row) {
-
             if ($row['name'] === $dayOfWeek) {
-
                 foreach ($row['columns'] as $column) {
                     $now = DateTime::createFromFormat('h:i a', $currentTime);
                     $start = DateTime::createFromFormat('h:i a', $column['shift_start']);
                     $end = DateTime::createFromFormat('h:i a', $column['shift_end']);
 
-                    if ($start > $end) $end->modify('+1 day');
+                    if ($start > $end) {
+                        $end->modify('+1 day');
+                    }
                     if ($start <= $now && $now <= $end || $start <= $now->modify('+1 day') && $now <= $end || $start == $end) {
                         try {
-
                             $filtered = $column->employeeCards->filter(function ($item) {
                                 return data_get($item->employee, 'is_active') === 1;
                             });
@@ -114,35 +178,36 @@ class PhoneScheduleController extends Controller
             return ['phone' => ''];
         }
 
-        $phoneLineData = PhoneLine::with('members.employee', 'rows.columns.employeeCards.employee')->find($request->input('phone_line_id'));
+        $phoneLineData = PhoneLine::with(
+            'members.employee',
+            'rows.columns.employeeCards.employee'
+        )->find($request->input('phone_line_id'));
         $dayOfWeek = date("l");
         $currentTime = date('h:i a');
 
         foreach ($phoneLineData['rows'] as $row) {
-
             if ($row['name'] === $dayOfWeek) {
-
                 foreach ($row['columns'] as $column) {
                     $now = DateTime::createFromFormat('h:i a', $currentTime);
                     $start = DateTime::createFromFormat('h:i a', $column['shift_start']);
                     $end = DateTime::createFromFormat('h:i a', $column['shift_end']);
 
-                    if ($start > $end) $end->modify('+1 day');
+                    if ($start > $end) {
+                        $end->modify('+1 day');
+                    }
                     if ($start <= $now && $now <= $end || $start <= $now->modify('+1 day') && $now <= $end || $start == $end) {
                         try {
-
                             $filtered = $column->employeeCards->filter(function ($item) {
                                 return data_get($item->employee, 'is_active') === 1;
                             });
-
                         } catch (\Exception $e) {
                             return ['phone' => ''];
                         }
 
                         foreach ($filtered as $employeeCard) {
-                            if ($employeeCard->employee->id == $callLog->employee_id)
+                            if ($employeeCard->employee->id == $callLog->employee_id) {
                                 return ['phone' => $employeeCard->employee->phone];
-                            else {
+                            } else {
                                 return ['phone' => ''];
                             }
                         }
