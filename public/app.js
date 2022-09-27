@@ -7836,6 +7836,113 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -7872,7 +7979,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         memberId: null,
         isLoading: false
       },
-      isDraggableDisabled: false
+      isDraggableDisabled: false,
+      openingHoursData: [],
+      directoryData: {
+        kanbanId: null,
+        mode: null,
+        messageEN: null,
+        messageFR: null
+      }
     };
   },
   mounted: function mounted() {
@@ -7910,6 +8024,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.eventHub.$off('save-columns');
   },
   methods: {
+    setMode: function setMode() {
+      if (this.directoryData.mode === 'sequential') {
+        this.directoryData.mode = 'directory';
+      } else if (this.directoryData.mode === 'directory') {
+        this.directoryData.mode = 'sequential';
+      }
+    },
+    undoModeChanges: function undoModeChanges() {
+      this.directoryData.mode = this.kanban.mode;
+      this.directoryData.messageFR = this.kanban.message_fr;
+      this.directoryData.messageEN = this.kanban.message_en;
+    },
+    saveModeChanges: function saveModeChanges() {
+      var _this2 = this;
+
+      this.isDraggableDisabled = true;
+      this.asyncUpdateModeData(this.directoryData).then(function () {
+        _this2.isDraggableDisabled = false;
+        _this2.kanban.mode = _this2.directoryData.mode;
+      });
+    },
     createEmployeeCard: function createEmployeeCard(rowIndex, columnIndex) {
       var rowName = this.kanban.rows[rowIndex].name;
       var columnName = this.kanban.rows[rowIndex].columns[columnIndex].name;
@@ -7931,7 +8066,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     // Whenever a user drags a card
     getChangeData: function getChangeData(event, columnIndex, rowIndex) {
-      var _this2 = this;
+      var _this3 = this;
 
       var eventName = Object.keys(event)[0];
       var employeeCardData = this.kanban.rows[rowIndex].columns[columnIndex].employee_cards;
@@ -7941,21 +8076,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       switch (eventName) {
         case "moved":
           this.asyncUpdateEmployeeCardIndexes(employeeCardData).then(function () {
-            _this2.isDraggableDisabled = false;
+            _this3.getOpeningHours(_this3.kanban.id);
+
+            _this3.isDraggableDisabled = false;
           });
           break;
 
         case "added":
           this.asyncUpdateEmployeeCardColumnId(columnId, event.added.element.id).then(function () {
-            _this2.asyncUpdateEmployeeCardIndexes(employeeCardData).then(function () {
-              _this2.isDraggableDisabled = false;
+            _this3.asyncUpdateEmployeeCardIndexes(employeeCardData).then(function () {
+              _this3.getOpeningHours(_this3.kanban.id);
+
+              _this3.isDraggableDisabled = false;
             });
           });
           break;
 
         case "removed":
           this.asyncUpdateEmployeeCardIndexes(employeeCardData).then(function () {
-            _this2.isDraggableDisabled = false;
+            _this3.getOpeningHours(_this3.kanban.id);
+
+            _this3.isDraggableDisabled = false;
           });
           break;
 
@@ -7963,8 +8104,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           alert('event "' + eventName + '" not handled: ');
       }
     },
+    getOpeningHours: function getOpeningHours(id) {
+      var _this4 = this;
+
+      this.asyncGetOpeningHoursData(id).then(function (data) {
+        _this4.openingHoursData = data.data;
+      });
+    },
     saveMember: function saveMember(selectedMembers) {
-      var _this3 = this;
+      var _this5 = this;
 
       this.loadingMembers = {
         memberId: null,
@@ -7974,44 +8122,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var cloneSelectedMembers = _objectSpread({}, selectedMembers);
 
       this.asyncAddMembers(cloneSelectedMembers, this.kanban.id).then(function () {
-        _this3.asyncGetMembers(_this3.kanban.id).then(function (data) {
-          _this3.kanban.members = data.data;
-          _this3.loadingMembers = {
+        _this5.asyncGetMembers(_this5.kanban.id).then(function (data) {
+          _this5.kanban.members = data.data;
+          _this5.loadingMembers = {
             memberId: null,
             isLoading: false
           };
-        })["catch"](function (res) {
-          console.log(res);
         });
-      })["catch"](function (res) {
-        console.log(res);
       });
     },
     deleteMember: function deleteMember(member) {
-      var _this4 = this;
+      var _this6 = this;
 
       this.asyncDeleteMember(member.id).then(function () {
-        _this4.loadingMembers = {
+        _this6.loadingMembers = {
           memberId: member.id,
           isLoading: true
         };
 
-        _this4.asyncGetMembers(_this4.kanban.id).then(function (data) {
-          _this4.kanban.members = data.data;
-          _this4.loadingMembers = {
+        _this6.asyncGetMembers(_this6.kanban.id).then(function (data) {
+          _this6.kanban.members = data.data;
+          _this6.loadingMembers = {
             memberId: null,
             isLoading: false
           };
-        })["catch"](function (res) {
-          console.log(res);
         });
-      })["catch"](function (res) {
-        console.log(res);
       });
       this.getKanban(this.kanban.id);
     },
     saveEmployeeCards: function saveEmployeeCards(cardData) {
-      var _this5 = this;
+      var _this7 = this;
 
       var cloneCardData = _objectSpread({}, cardData);
 
@@ -8020,21 +8160,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         isLoading: true
       };
       this.asyncCreateEmployeeCards(cloneCardData).then(function () {
-        _this5.asyncGetEmployeeCardsByColumn(cloneCardData.columnId).then(function (data) {
-          _this5.kanban.rows[cloneCardData.selectedRowIndex].columns[cloneCardData.selectedColumnIndex].employee_cards = data.data;
-          _this5.loadingCards = {
+        _this7.asyncGetEmployeeCardsByColumn(cloneCardData.columnId).then(function (data) {
+          _this7.kanban.rows[cloneCardData.selectedRowIndex].columns[cloneCardData.selectedColumnIndex].employee_cards = data.data;
+          _this7.loadingCards = {
             columnId: null,
             isLoading: false
           };
-        })["catch"](function (res) {
-          console.log(res);
         });
-      })["catch"](function (res) {
-        console.log(res);
       });
     },
     deleteEmployeeCard: function deleteEmployeeCard(cardData) {
-      var _this6 = this;
+      var _this8 = this;
 
       var cloneCardData = _objectSpread({}, cardData);
 
@@ -8043,21 +8179,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         isLoading: true
       };
       this.asyncDeleteEmployeeCard(cloneCardData.selectedCardData.id).then(function () {
-        _this6.asyncGetEmployeeCardsByColumn(cloneCardData.selectedCardData.column_id).then(function (data) {
-          _this6.kanban.rows[cloneCardData.selectedRowIndex].columns[cloneCardData.selectedColumnIndex].employee_cards = data.data;
-          _this6.loadingCards = {
+        _this8.asyncGetEmployeeCardsByColumn(cloneCardData.selectedCardData.column_id).then(function (data) {
+          _this8.kanban.rows[cloneCardData.selectedRowIndex].columns[cloneCardData.selectedColumnIndex].employee_cards = data.data;
+          _this8.loadingCards = {
             columnId: null,
             isLoading: false
           };
-        })["catch"](function (res) {
-          console.log(res);
         });
-      })["catch"](function (res) {
-        console.log(res);
       });
     },
     saveColumns: function saveColumns(columnData) {
-      var _this7 = this;
+      var _this9 = this;
 
       var cloneColumnData = _objectSpread({}, columnData);
 
@@ -8067,27 +8199,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         isLoading: true
       };
       this.asyncCreateColumns(cloneColumnData).then(function (data) {
-        _this7.kanban.rows[rowIndex].columns = data.data;
-        _this7.loadingColumn = {
+        _this9.kanban.rows[rowIndex].columns = data.data;
+        _this9.loadingColumn = {
           rowId: null,
           isLoading: false
         };
-      })["catch"](function (res) {
-        console.log(res);
+      });
+    },
+    saveDirectoryData: function saveDirectoryData() {
+      var _this10 = this;
+
+      this.asyncCreateColumns(cloneColumnData).then(function (data) {
+        _this10.kanban.rows[rowIndex].columns = data.data;
+        _this10.loadingColumn = {
+          rowId: null,
+          isLoading: false
+        };
       });
     },
     getKanban: function getKanban(kanbanID) {
-      var _this8 = this;
+      var _this11 = this;
 
       this.eventHub.$emit("set-loading-state", true);
       this.asyncGetPhoneLineData(kanbanID).then(function (data) {
-        _this8.kanban = data.data;
+        _this11.kanban = data.data.phoneLine;
+        _this11.openingHoursData = data.data.openingHours;
+        _this11.directoryData.kanbanId = _this11.kanban.id;
+        _this11.directoryData.mode = _this11.kanban.mode;
+        _this11.directoryData.messageFR = _this11.kanban.message_fr;
+        _this11.directoryData.messageEN = _this11.kanban.message_en;
 
-        _this8.eventHub.$emit("set-loading-state", false);
-
-        console.log(data);
-      })["catch"](function (res) {
-        console.log(res);
+        _this11.eventHub.$emit("set-loading-state", false);
       });
     }
   }
@@ -8994,7 +9136,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "\n.column-width[data-v-4f1aabee] {\n    min-width: 230px;\n}\n.ghost-card[data-v-4f1aabee] {\n    opacity: 0.5;\n    background: #F7FAFC;\n    border: 1px solid #4299e1;\n}\n", ""]);
+exports.push([module.i, "\n.column-width[data-v-4f1aabee] {\n    min-width: 230px;\n}\n.ghost-card[data-v-4f1aabee] {\n    opacity: 0.5;\n    background: #F7FAFC;\n    border: 1px solid #4299e1;\n}\n.toggle__dot[data-v-4f1aabee] {\n    top: -0.1rem;\n\n    transition: all 0.1s ease-in-out;\n}\ninput:checked ~ .toggle__dot[data-v-4f1aabee] {\n    transform: translateX(100%);\n    background-color: #059669;\n}\n\n", ""]);
 
 // exports
 
@@ -17320,6 +17462,389 @@ var render = function() {
             }
           }),
           _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "border border-gray-400 py-2 px-4 my-2 mx-10" },
+            [
+              _c("div", { staticClass: "flex space-x-4 items-center py-2" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "flex items-start cursor-pointer",
+                    attrs: { for: "mode" }
+                  },
+                  [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "relative mt-1" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.directoryData.mode === "sequential",
+                            expression: "directoryData.mode ==='sequential'"
+                          }
+                        ],
+                        staticClass: "hidden",
+                        attrs: { id: "mode", type: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(
+                            _vm.directoryData.mode === "sequential"
+                          )
+                            ? _vm._i(
+                                _vm.directoryData.mode === "sequential",
+                                null
+                              ) > -1
+                            : _vm.directoryData.mode === "sequential"
+                        },
+                        on: {
+                          change: [
+                            function($event) {
+                              var $$a = _vm.directoryData.mode === "sequential",
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(
+                                      _vm.directoryData,
+                                      "mode ==='sequential'",
+                                      $$a.concat([$$v])
+                                    )
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      _vm.directoryData,
+                                      "mode ==='sequential'",
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(
+                                  _vm.directoryData,
+                                  "mode ==='sequential'",
+                                  $$c
+                                )
+                              }
+                            },
+                            _vm.setMode
+                          ]
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("div", {
+                        staticClass:
+                          "toggle__dot absolute w-5 h-5 bg-blue-700 rounded-full shadow inset-y-0 left-0"
+                      }),
+                      _vm._v(" "),
+                      _c("div", {
+                        staticClass:
+                          "toggle__line w-10 h-4 bg-gray-400 rounded-full shadow-inner"
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(1)
+                  ]
+                ),
+                _vm._v(" "),
+                _vm.directoryData.mode === "sequential"
+                  ? _c(
+                      "small",
+                      { staticClass: "flex-1 text-green-700 font-semibold" },
+                      [
+                        _vm._v(
+                          "Each employee will\n                be called in\n                sequential order until someone picks up."
+                        )
+                      ]
+                    )
+                  : _c(
+                      "small",
+                      { staticClass: "flex-1 text-blue-700 font-semibold" },
+                      [
+                        _vm._v(
+                          "An intro message will play and then the caller\n                will hear a list of each employee name with the ability to choose who they want to talk to. "
+                        )
+                      ]
+                    ),
+                _vm._v(" "),
+                _vm.directoryData.mode === "sequential" &&
+                _vm.kanban.mode !== "sequential"
+                  ? _c(
+                      "button",
+                      {
+                        staticClass:
+                          "border border-indigo-500 bg-indigo-500 text-white rounded-md px-4 py-1 transition duration-500 ease hover:bg-indigo-600 focus:outline-none focus:shadow-outline",
+                        attrs: { type: "button" },
+                        on: { click: _vm.saveModeChanges }
+                      },
+                      [
+                        _vm._v(
+                          "\n                Save Mode Change\n            "
+                        )
+                      ]
+                    )
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _vm.directoryData.mode === "directory"
+                ? _c("div", [
+                    _c("hr", { staticClass: "mt-2 pt-2" }),
+                    _vm._v(" "),
+                    _c("h3", { staticClass: "font-bold" }, [
+                      _vm._v("Your Intro Message")
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "w-full grid sm:grid-cols-2 gap-3 sm:gap-3"
+                      },
+                      [
+                        _c("div", { staticClass: "pt-4" }, [
+                          _c(
+                            "label",
+                            {
+                              staticClass:
+                                "block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400",
+                              attrs: { for: "englishIntro" }
+                            },
+                            [_vm._v("English")]
+                          ),
+                          _vm._v(" "),
+                          _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.directoryData.messageEN,
+                                expression: "directoryData.messageEN"
+                              }
+                            ],
+                            staticClass:
+                              "block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300",
+                            attrs: {
+                              id: "englishIntro",
+                              rows: "4",
+                              placeholder: "Welcome to XGuard Security..."
+                            },
+                            domProps: { value: _vm.directoryData.messageEN },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.directoryData,
+                                  "messageEN",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex bg-blue-50 rounded-lg p-4 my-3 text-sm text-blue-800",
+                              attrs: { role: "alert" }
+                            },
+                            [
+                              _c("div", [
+                                _c("div", { staticClass: "font-medium" }, [
+                                  _vm._v("English Intro")
+                                ]),
+                                _vm._v(" "),
+                                _c("p", { staticClass: "pt-1" }, [
+                                  _vm._v(_vm._s(_vm.directoryData.messageEN))
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(
+                                    "To speak to ***, press 1. To speak to *** press 2..."
+                                  )
+                                ])
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex bg-green-50 rounded-lg p-4 my-3 text-sm text-green-800",
+                              attrs: { role: "alert" }
+                            },
+                            [
+                              _c("div", [
+                                _c("div", { staticClass: "font-medium" }, [
+                                  _vm._v("English Opening Hours Text")
+                                ]),
+                                _vm._v(" "),
+                                _c("p", { staticClass: "pt-1" }, [
+                                  _vm._v(_vm._s(_vm.directoryData.messageEN))
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.openingHoursData.openingHoursEnText
+                                    )
+                                  )
+                                ])
+                              ])
+                            ]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "pt-4" }, [
+                          _c(
+                            "label",
+                            {
+                              staticClass:
+                                "block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400",
+                              attrs: { for: "frenchIntro" }
+                            },
+                            [_vm._v("French")]
+                          ),
+                          _vm._v(" "),
+                          _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.directoryData.messageFR,
+                                expression: "directoryData.messageFR"
+                              }
+                            ],
+                            staticClass:
+                              "block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300",
+                            attrs: {
+                              id: "frenchIntro",
+                              rows: "4",
+                              placeholder: "Bienvenue chez Sécurité XGuard..."
+                            },
+                            domProps: { value: _vm.directoryData.messageFR },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.directoryData,
+                                  "messageFR",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex bg-blue-50 rounded-lg p-4 my-3 text-sm text-blue-800",
+                              attrs: { role: "alert" }
+                            },
+                            [
+                              _c("div", [
+                                _c("div", { staticClass: "font-medium" }, [
+                                  _vm._v("French Intro")
+                                ]),
+                                _vm._v(" "),
+                                _c("p", { staticClass: "pt-1" }, [
+                                  _vm._v(_vm._s(_vm.directoryData.messageFR))
+                                ]),
+                                _vm._v(" "),
+                                _c("p", { staticClass: "pt-1" }, [
+                                  _vm._v(
+                                    "Pour parler à ***, appuyez sur le 1. Pour parler à ***, appuyez sur le 2... "
+                                  )
+                                ])
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "flex bg-green-50 rounded-lg p-4 my-3 text-sm text-green-800",
+                              attrs: { role: "alert" }
+                            },
+                            [
+                              _c("div", [
+                                _c("div", { staticClass: "font-medium" }, [
+                                  _vm._v("French Opening Hours Text")
+                                ]),
+                                _vm._v(" "),
+                                _c("p", { staticClass: "pt-1" }, [
+                                  _vm._v(_vm._s(_vm.directoryData.messageFR))
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.openingHoursData.openingHoursFrText
+                                    )
+                                  )
+                                ])
+                              ])
+                            ]
+                          )
+                        ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("hr", { staticClass: "mt-2 pt-2" }),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "w-50 grid sm:grid-cols-2 gap-3 sm:gap-3"
+                      },
+                      [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "py-2 border border-gray-200 rounded text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-600 transition duration-300 ease-in-out",
+                            attrs: { type: "button" },
+                            on: { click: _vm.undoModeChanges }
+                          },
+                          [
+                            _vm._v(
+                              "\n                    Undo\n                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "py-2 border border-transparent rounded text-white bg-indigo-600 hover:bg-indigo-500 transition duration-300 ease-in-out",
+                            attrs: { type: "button" },
+                            on: { click: _vm.saveModeChanges }
+                          },
+                          [
+                            _vm._v(
+                              "\n                    Save\n                "
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ])
+                : _vm._e()
+            ]
+          ),
+          _vm._v(" "),
           _vm._l(_vm.kanban.rows, function(row, rowIndex) {
             return _c("div", { key: row.id, staticClass: "mx-10 my-3" }, [
               _vm.loadingColumn.rowId === row.id && _vm.loadingColumn.isLoading
@@ -17506,7 +18031,26 @@ var render = function() {
       )
     : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "mr-3 text-gray-700 font-medium text-right" },
+      [_c("p", [_vm._v("Directory Mode")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "ml-3 text-gray-700 font-medium" }, [
+      _c("p", [_vm._v("Sequential Mode")])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -40909,54 +41453,68 @@ var ajaxCalls = {
         _this.triggerErrorToast(error.response.data.message);
       });
     },
-    asyncDeletePhoneLine: function asyncDeletePhoneLine(phoneLineId) {
+    asyncUpdateModeData: function asyncUpdateModeData(phoneLineData) {
       var _this2 = this;
 
-      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('delete-phone-line/' + phoneLineId)["catch"](function (error) {
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('update-mode-data', phoneLineData)["catch"](function (error) {
         _this2.triggerErrorToast(error.response.data.message);
+      });
+    },
+    asyncDeletePhoneLine: function asyncDeletePhoneLine(phoneLineId) {
+      var _this3 = this;
+
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('delete-phone-line/' + phoneLineId)["catch"](function (error) {
+        _this3.triggerErrorToast(error.response.data.message);
       });
     },
     asyncGetTags: function asyncGetTags() {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('get-tags');
     },
+    asyncGetOpeningHoursData: function asyncGetOpeningHoursData(phoneLineId) {
+      var _this4 = this;
+
+      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('get-opening-hours/' + phoneLineId)["catch"](function (error) {
+        _this4.triggerErrorToast(error.response.data.message);
+      });
+    },
     // Columns
     asyncCreateColumns: function asyncCreateColumns(columnData) {
-      var _this3 = this;
+      var _this5 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('create-columns', columnData)["catch"](function (error) {
-        _this3.triggerErrorToast(error.response.data.message);
+        _this5.triggerErrorToast(error.response.data.message);
       });
     },
     // Employee Cards
     asyncCreateEmployeeCards: function asyncCreateEmployeeCards(employeeCardData) {
-      var _this4 = this;
+      var _this6 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('create-employee-cards', employeeCardData)["catch"](function (error) {
-        _this4.triggerErrorToast(error.response.data.message);
+        _this6.triggerErrorToast(error.response.data.message);
       });
     },
     asyncGetEmployeeCardsByColumn: function asyncGetEmployeeCardsByColumn(columnId) {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('get-employee-cards-by-column/' + columnId);
     },
     asyncDeleteEmployeeCard: function asyncDeleteEmployeeCard(employeeCardId) {
-      var _this5 = this;
+      var _this7 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('delete-employee-card/' + employeeCardId)["catch"](function (error) {
-        _this5.triggerErrorToast(error.response.data.message);
+        _this7.triggerErrorToast(error.response.data.message);
       });
     },
     asyncUpdateEmployeeCardIndexes: function asyncUpdateEmployeeCardIndexes(employeeCards) {
-      var _this6 = this;
+      var _this8 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('update-employee-card-indexes', employeeCards)["catch"](function (error) {
-        _this6.triggerErrorToast(error.response.data.message);
+        _this8.triggerErrorToast(error.response.data.message);
       });
     },
     asyncUpdateEmployeeCardColumnId: function asyncUpdateEmployeeCardColumnId(columnId, employeeCardId) {
-      var _this7 = this;
+      var _this9 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('update-employee-card-column/' + columnId + '/' + employeeCardId)["catch"](function (error) {
-        _this7.triggerErrorToast(error.response.data.message);
+        _this9.triggerErrorToast(error.response.data.message);
       });
     },
     // Employees
@@ -40964,17 +41522,17 @@ var ajaxCalls = {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('get-employees');
     },
     asyncCreateEmployee: function asyncCreateEmployee(employeeData) {
-      var _this8 = this;
+      var _this10 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('create-employee', employeeData)["catch"](function (error) {
-        _this8.triggerErrorToast(error.response.data.message);
+        _this10.triggerErrorToast(error.response.data.message);
       });
     },
     asyncDeleteEmployee: function asyncDeleteEmployee(employeeId) {
-      var _this9 = this;
+      var _this11 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('delete-employee/' + employeeId)["catch"](function (error) {
-        _this9.triggerErrorToast(error.response.data.message);
+        _this11.triggerErrorToast(error.response.data.message);
       });
     },
     // Members
@@ -40982,22 +41540,22 @@ var ajaxCalls = {
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('get-members/' + phoneLineId);
     },
     asyncAddMembers: function asyncAddMembers(memberData, phoneLineId) {
-      var _this10 = this;
+      var _this12 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('create-members/' + phoneLineId, memberData)["catch"](function (error) {
-        _this10.triggerErrorToast(error.response.data.message);
+        _this12.triggerErrorToast(error.response.data.message);
       });
     },
     asyncDeleteMember: function asyncDeleteMember(memberId) {
-      var _this11 = this;
+      var _this13 = this;
 
       return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('delete-member/' + memberId)["catch"](function (error) {
-        _this11.triggerErrorToast(error.response.data.message);
+        _this13.triggerErrorToast(error.response.data.message);
       });
     },
     triggerSuccessToast: function triggerSuccessToast(message) {
       this.$toast(message, {
-        position: "bottom-right",
+        position: 'bottom-right',
         timeout: 4000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
@@ -41006,14 +41564,14 @@ var ajaxCalls = {
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
         hideProgressBar: false,
-        closeButton: "button",
+        closeButton: 'button',
         icon: true,
         rtl: false
       });
     },
     triggerErrorToast: function triggerErrorToast(message) {
       this.$toast.error(message, {
-        position: "bottom-right",
+        position: 'bottom-right',
         timeout: 4000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
@@ -41022,14 +41580,14 @@ var ajaxCalls = {
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
         hideProgressBar: false,
-        closeButton: "button",
+        closeButton: 'button',
         icon: true,
         rtl: false
       });
     },
     triggerInfoToast: function triggerInfoToast(message) {
       this.$toast.error(message, {
-        position: "bottom-right",
+        position: 'bottom-right',
         timeout: 4000,
         closeOnClick: true,
         pauseOnFocusLoss: true,
@@ -41038,7 +41596,7 @@ var ajaxCalls = {
         draggablePercent: 0.6,
         showCloseButtonOnHover: false,
         hideProgressBar: false,
-        closeButton: "button",
+        closeButton: 'button',
         icon: true,
         rtl: false
       });
