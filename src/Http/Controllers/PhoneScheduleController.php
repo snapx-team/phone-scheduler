@@ -111,13 +111,11 @@ class PhoneScheduleController extends Controller
         return ['employee_id' => '', 'name' => '', 'phone' => '',];
     }
 
-    public function getRecentCallerInfo(
-        Request $request
-    ) {
+    public function getRecentCallerInfo($id, $phone) {
         date_default_timezone_set('America/Montreal');
 
-        $callLog = CallLog::where('phone_line_id', '=', $request->input('phone_line_id'))
-            ->where('caller_phone', '=', $request->input('caller_phone'))
+        $callLog = CallLog::where('phone_line_id', '=', $id)
+            ->where('caller_phone', '=', $phone)
             ->whereDate('created_at', Carbon::today())->latest()->first();
 
         if ($callLog == null) {
@@ -127,7 +125,7 @@ class PhoneScheduleController extends Controller
         $phoneLineData = PhoneLine::with(
             'members.employee',
             'rows.columns.employeeCards.employee'
-        )->find($request->input('phone_line_id'));
+        )->find($phone);
         $dayOfWeek = date("l");
         $currentTime = date('h:i a');
 
@@ -152,7 +150,7 @@ class PhoneScheduleController extends Controller
 
                         foreach ($filtered as $employeeCard) {
                             if ($employeeCard->employee->id == $callLog->employee_id) {
-                                return ['phone' => $employeeCard->employee->phone];
+                                return ['phone' => $employeeCard->employee->phone, 'name' => $employeeCard->employee->name];
                             } else {
                                 return ['phone' => ''];
                             }

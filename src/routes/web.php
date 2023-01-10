@@ -56,7 +56,7 @@ Route::group(['namespace' => 'Xguard\PhoneScheduler\Http\Controllers',], functio
 
         Route::get('/api/formatted-phone-line-data/{id}', 'PhoneScheduleController@getFormattedData');
         Route::get('/api/get-available-agent/{id}/{level}', 'PhoneScheduleController@getAvailableAgent');
-        Route::get('/api/get-recent-caller-info', 'PhoneScheduleController@getRecentCallerInfo');
+        Route::get('/api/get-recent-caller-info/{id}/{phone}', 'PhoneScheduleController@getRecentCallerInfo');
         Route::post('/api/log-call', 'PhoneScheduleController@logCall');
         Route::get('/api/get-directory-data/{id}', 'PhoneScheduleController@getDirectoryData');
         Route::get('/api/get-opening-hours/{id}', 'PhoneScheduleController@getOpeningHours');
