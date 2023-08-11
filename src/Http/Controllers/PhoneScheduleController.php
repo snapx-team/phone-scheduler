@@ -150,7 +150,7 @@ class PhoneScheduleController extends Controller
 
                         foreach ($filtered as $employeeCard) {
                             if ($employeeCard->employee->id == $callLog->employee_id) {
-                                return ['phone' => $employeeCard->employee->phone, 'name' => $employeeCard->employee->name];
+                                return ['phone' => $employeeCard->employee->phone, 'name' => $employeeCard->employee->name, 'employee_id' =>$employeeCard->employee->id];
                             } else {
                                 return ['phone' => ''];
                             }

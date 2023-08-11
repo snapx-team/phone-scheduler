@@ -9136,7 +9136,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "\n.column-width[data-v-4f1aabee] {\n    min-width: 230px;\n}\n.ghost-card[data-v-4f1aabee] {\n    opacity: 0.5;\n    background: #F7FAFC;\n    border: 1px solid #4299e1;\n}\n.toggle__dot[data-v-4f1aabee] {\n    top: -0.1rem;\n\n    transition: all 0.1s ease-in-out;\n}\ninput:checked ~ .toggle__dot[data-v-4f1aabee] {\n    transform: translateX(100%);\n    background-color: #059669;\n}\n\n", ""]);
+exports.push([module.i, "\n.column-width[data-v-4f1aabee] {\r\n    min-width: 230px;\n}\n.ghost-card[data-v-4f1aabee] {\r\n    opacity: 0.5;\r\n    background: #F7FAFC;\r\n    border: 1px solid #4299e1;\n}\n.toggle__dot[data-v-4f1aabee] {\r\n    top: -0.1rem;\r\n\r\n    transition: all 0.1s ease-in-out;\n}\ninput:checked ~ .toggle__dot[data-v-4f1aabee] {\r\n    transform: translateX(100%);\r\n    background-color: #059669;\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -41667,8 +41667,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\laragon\www\xguard-schedule\package\phone-scheduler\src\resources\js\app.js */"./src/resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\laragon\www\xguard-schedule\package\phone-scheduler\src\resources\sass\app.scss */"./src/resources/sass/app.scss");
+__webpack_require__(/*! C:\laragon\www\xguard-schedule\packages\phone-scheduler\src\resources\js\app.js */"./src/resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\xguard-schedule\packages\phone-scheduler\src\resources\sass\app.scss */"./src/resources/sass/app.scss");
 
 
 /***/ })
